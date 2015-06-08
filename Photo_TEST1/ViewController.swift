@@ -7,19 +7,43 @@
 //
 
 import UIKit
+import Photos
 
-class ViewController: UIViewController {
-
+class ViewController: UIViewController,UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    @IBOutlet var imageView: UIImageView!
+    @IBOutlet var dateLabel: UILabel!
+    @IBOutlet var pathLabel: UILabel!
+    
+    var imagePickerController: UIImagePickerController = UIImagePickerController()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-
+    
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info:[NSObject : AnyObject]) {
+        
+        var image: UIImage = info[UIImagePickerControllerOriginalImage] as! UIImage
+        var url: NSURL = info[UIImagePickerControllerReferenceURL] as! NSURL
+        let fetchresult: PHFetchResult = PHAsset.fetchAssetsWithALAssetURLs([url], options: nil)
+        let asset: PHAsset = fetchresult.firstObject as! PHAsset
+                
+        dateLabel.text = asset.creationDate.description
+        imageView.image = image
+        
+        picker.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    @IBAction func Button() {
+        imagePickerController.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
+        imagePickerController.delegate = self
+        
+        self .presentViewController(imagePickerController, animated: true, completion: nil)
+    }
 }
 
